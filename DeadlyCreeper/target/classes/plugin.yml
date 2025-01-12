@@ -1,0 +1,4 @@
+name: DeadlyCreeper
+version: 1.0
+main: com.example.deadlycreeper.DeadlyCreeper
+api-version: '1.21'

@@ -1,0 +1,126 @@
+[01:23:47] [ServerMain/INFO]: [bootstrap] Running Java 21 (OpenJDK 64-Bit Server VM 21.0.5+11-LTS; Eclipse Adoptium Temurin-21.0.5+11) on Windows 11 10.0 (amd64)
+[01:23:47] [ServerMain/INFO]: [bootstrap] Loading Paper 1.21.3-82-ver/1.21.3@5a60ffb (2024-12-23T19:10:30Z) for Minecraft 1.21.3
+[01:23:48] [ServerMain/INFO]: [PluginInitializerManager] Initializing plugins...
+[01:23:48] [Paper Plugin Remapper Thread - 2/INFO]: [PluginRemapper] Remapping plugin 'plugins\deadlycreeper-1.0-SNAPSHOT.jar'...
+[01:23:49] [Paper Plugin Remapper Thread - 2/INFO]: [PluginRemapper] Done remapping plugin 'plugins\deadlycreeper-1.0-SNAPSHOT.jar' in 483ms.
+[01:23:49] [ServerMain/INFO]: [PluginInitializerManager] Initialized 1 plugin
+[01:23:49] [ServerMain/INFO]: [PluginInitializerManager] Bukkit plugins (1):
+ - DeadlyCreeper (1.0)
+[01:23:54] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[01:23:56] [ServerMain/INFO]: Loaded 1337 recipes
+[01:23:56] [ServerMain/INFO]: Loaded 1448 advancements
+[01:23:56] [Server thread/INFO]: Starting minecraft server version 1.21.3
+[01:23:56] [Server thread/INFO]: Loading properties
+[01:23:56] [Server thread/INFO]: This server is running Paper version 1.21.3-82-ver/1.21.3@5a60ffb (2024-12-23T19:10:30Z) (Implementing API version 1.21.3-R0.1-SNAPSHOT)
+[01:23:57] [Server thread/INFO]: [spark] This server bundles the spark profiler. For more information please visit https://docs.papermc.io/paper/profiling
+[01:23:57] [Server thread/INFO]: Using 4 threads for Netty based IO
+[01:23:57] [Server thread/INFO]: Server Ping Player Sample Count: 12
+[01:23:58] [Server thread/INFO]: [MoonriseCommon] Paper is using 5 worker threads, 1 I/O threads
+[01:23:58] [Server thread/INFO]: [ChunkTaskScheduler] Chunk system is using population gen parallelism: true
+[01:23:58] [Server thread/INFO]: Default game type: SURVIVAL
+[01:23:58] [Server thread/INFO]: Generating keypair
+[01:23:58] [Server thread/INFO]: Starting Minecraft server on *:25565
+[01:23:58] [Server thread/INFO]: Using default channel type
+[01:23:58] [Server thread/INFO]: Paper: Using Java compression from Velocity.
+[01:23:58] [Server thread/INFO]: Paper: Using Java cipher from Velocity.
+[01:23:58] [Server thread/INFO]: [DeadlyCreeper] Loading server plugin DeadlyCreeper v1.0
+[01:23:58] [Server thread/INFO]: Server permissions file permissions.yml is empty, ignoring it
+[01:23:58] [Server thread/INFO]: Preparing level "world"
+[01:23:58] [Server thread/INFO]: Preparing start region for dimension minecraft:overworld
+[01:23:59] [Paper Common Worker #2/INFO]: [MCTypeRegistry] Initialising converters for DataConverter...
+[01:23:59] [Paper Common Worker #2/INFO]: [MCTypeRegistry] Finished initialising converters for DataConverter in 420.9ms
+[01:23:59] [Server thread/INFO]: Preparing spawn area: 0%
+[01:23:59] [Server thread/INFO]: Preparing spawn area: 0%
+[01:24:00] [Server thread/INFO]: Preparing spawn area: 0%
+[01:24:00] [Server thread/INFO]: Time elapsed: 1151 ms
+[01:24:00] [Server thread/INFO]: Preparing start region for dimension minecraft:the_nether
+[01:24:00] [Server thread/INFO]: Preparing spawn area: 0%
+[01:24:00] [Server thread/INFO]: Time elapsed: 83 ms
+[01:24:00] [Server thread/INFO]: Preparing start region for dimension minecraft:the_end
+[01:24:00] [Server thread/INFO]: Preparing spawn area: 0%
+[01:24:00] [Server thread/INFO]: Time elapsed: 68 ms
+[01:24:00] [Server thread/INFO]: [DeadlyCreeper] Enabling DeadlyCreeper v1.0
+[01:24:00] [Server thread/INFO]: [spark] Starting background profiler...
+[01:24:00] [Server thread/INFO]: [spark] The async-profiler engine is not supported for your os/arch (windows11/amd64), so the built-in Java engine will be used instead.
+[01:24:00] [Server thread/INFO]: Done preparing level "world" (1.978s)
+[01:24:00] [Server thread/INFO]: Running delayed init tasks
+[01:24:00] [Server thread/INFO]: Done (13.645s)! For help, type "help"
+[01:24:05] [User Authenticator #0/INFO]: UUID of player ElmosUnderworld is 0af84999-96b6-40e3-b1b0-e1e4bef8da24
+[01:24:05] [Server thread/INFO]: ElmosUnderworld joined the game
+[01:24:05] [Server thread/INFO]: ElmosUnderworld[/127.0.0.1:51612] logged in with entity id 106 at ([world]18.76377223055935, 73.0, -37.873499565665924)
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:09] [Server thread/INFO]: ElmosUnderworld died
+[01:24:10] [Server thread/INFO]: ElmosUnderworld died
+[01:24:10] [Server thread/INFO]: ElmosUnderworld died
+[01:24:10] [Server thread/INFO]: ElmosUnderworld died
+[01:24:51] [Server thread/INFO]: ElmosUnderworld died
+[01:24:51] [Server thread/INFO]: ElmosUnderworld died
+[01:24:51] [Server thread/INFO]: ElmosUnderworld died
+[01:24:51] [Server thread/INFO]: ElmosUnderworld died
+[01:24:51] [Server thread/INFO]: ElmosUnderworld died
+[01:24:51] [Server thread/INFO]: ElmosUnderworld died
+[01:24:51] [Server thread/INFO]: ElmosUnderworld died
+[01:24:51] [Server thread/INFO]: ElmosUnderworld died
+[01:24:51] [Server thread/INFO]: ElmosUnderworld died
+[01:24:51] [Server thread/INFO]: ElmosUnderworld died
+[01:24:51] [Server thread/INFO]: ElmosUnderworld died
+[01:24:51] [Server thread/INFO]: ElmosUnderworld died
+[01:24:52] [Server thread/INFO]: ElmosUnderworld died
+[01:24:52] [Server thread/INFO]: ElmosUnderworld died
+[01:24:52] [Server thread/INFO]: ElmosUnderworld died
+[01:24:52] [Server thread/INFO]: ElmosUnderworld died
+[01:24:52] [Server thread/INFO]: ElmosUnderworld died
+[01:24:52] [Server thread/INFO]: ElmosUnderworld died
+[01:24:52] [Server thread/INFO]: ElmosUnderworld died
+[01:24:52] [Server thread/INFO]: ElmosUnderworld died
+[01:25:03] [Server thread/INFO]: ElmosUnderworld lost connection: Disconnected
+[01:25:03] [Server thread/INFO]: ElmosUnderworld left the game
+[01:25:14] [Server thread/INFO]: Stopping the server
+[01:25:14] [Server thread/INFO]: Stopping server
+[01:25:14] [Server thread/INFO]: [DeadlyCreeper] Disabling DeadlyCreeper v1.0
+[01:25:14] [Server thread/INFO]: Saving players
+[01:25:15] [Server thread/INFO]: Saving worlds
+[01:25:15] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world'
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world'
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world'
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Saved 802 block chunks, 736 entity chunks, 1 poi chunks in world 'world' in 0.38s
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'world'
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'world'
+[01:25:15] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_nether]'/minecraft:the_nether
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world_nether'
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world_nether'
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world_nether'
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Saved 49 block chunks, 49 entity chunks, 0 poi chunks in world 'world_nether' in 0.02s
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'world_nether'
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'world_nether'
+[01:25:15] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_the_end]'/minecraft:the_end
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world_the_end'
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world_the_end'
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world_the_end'
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Saved 49 block chunks, 49 entity chunks, 0 poi chunks in world 'world_the_end' in 0.01s
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'world_the_end'
+[01:25:15] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'world_the_end'
+[01:25:15] [Server thread/INFO]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[01:25:15] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[01:25:15] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[01:25:15] [Server thread/INFO]: ThreadedAnvilChunkStorage: All dimensions are saved
+[01:25:15] [Server thread/INFO]: Waiting for I/O tasks to complete...
+[01:25:15] [Server thread/INFO]: All I/O tasks to complete
+[01:25:15] [Server thread/INFO]: [MoonriseCommon] Awaiting termination of worker pool for up to 60s...
+[01:25:15] [Server thread/INFO]: [MoonriseCommon] Awaiting termination of I/O pool for up to 60s...
