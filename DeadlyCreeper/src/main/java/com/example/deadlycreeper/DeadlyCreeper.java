@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import org.bukkit.entity.Mob;
+import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class DeadlyCreeper extends JavaPlugin implements Listener {
     private final Map<UUID, Location> lastCreeperLocations = new HashMap<>();
@@ -54,9 +55,9 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
         // Make it completely invulnerable
         creeper.setInvulnerable(true);
         
-        // Prevent explosion completely
-        creeper.setMaxFuseTicks(Integer.MAX_VALUE);
-        creeper.setExplosionRadius(0);
+        // Modify fuse settings for instant explosion with damage
+        creeper.setMaxFuseTicks(1); // Almost instant fuse
+        creeper.setExplosionRadius(10); // Normal creeper explosion radius (default is 3)
         
         // Give it special abilities
         creeper.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 1, false, false));
@@ -70,7 +71,7 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
         ((Mob)creeper).setTarget(target);
         ((Mob)creeper).setAware(true);
         
-        // Start checking for collision
+        // Continuously reinforce targeting and check for dimension/stuck
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -78,11 +79,14 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
                     this.cancel();
                     return;
                 }
+
+                // Constantly reinforce the target
+                ((Mob)creeper).setTarget(target);
+                
                 // Handle dimension changes and stuck scenarios
                 if (!creeper.getWorld().equals(target.getWorld()) || isStuck(creeper)) {
                     teleportInFrontOfPlayer(creeper, target);
                 }
-                checkCollision(creeper, target);
             }
         }.runTaskTimer(this, 0L, 1L);
     }
@@ -128,8 +132,15 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
         if (event.getEntity() instanceof Creeper) {
             Creeper creeper = (Creeper) event.getEntity();
             if ("§4☠ Death Tracker ☠".equals(creeper.getCustomName())) {
-                event.setCancelled(true); // Cancel ALL damage
+                event.setCancelled(true);
             }
+        } else if (event.getEntity() instanceof Player 
+                   && event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
+            Player player = (Player) event.getEntity();
+            // Kill player if they're in explosion radius, no need to check distance
+            event.setCancelled(true);
+            player.setHealth(0.0);
+            player.getWorld().strikeLightningEffect(player.getLocation());
         }
     }
 
@@ -148,6 +159,35 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
         }
     }
 
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        if (event.getEntity() instanceof Creeper) {
+            Creeper creeper = (Creeper) event.getEntity();
+            if ("§4☠ Death Tracker ☠".equals(creeper.getCustomName())) {
+                // Clear the block list to prevent block damage
+                event.blockList().clear();
+                
+                // Find the target player and spawn a new creeper
+                for (Player player : getServer().getOnlinePlayers()) {
+                    if (player.getLocation().distance(creeper.getLocation()) <= 10) {
+                        // Schedule the spawn for next tick to avoid conflicts
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                Creeper newCreeper = (Creeper) player.getWorld().spawnEntity(
+                                    player.getLocation().add(5, 0, 5),
+                                    EntityType.CREEPER
+                                );
+                                setupCreeper(newCreeper, player);
+                            }
+                        }.runTaskLater(this, 1L);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     private boolean hasTrackerCreeper(Player player) {
         for (Entity entity : player.getWorld().getEntities()) {
             if (entity instanceof Creeper && 
@@ -156,13 +196,5 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
             }
         }
         return false;
-    }
-
-    // Add this new method for additional hit detection
-    private void checkCollision(Creeper creeper, Player player) {
-        if (creeper.getLocation().distance(player.getLocation()) < 2.0) {
-            player.setHealth(0.0);
-            player.getWorld().strikeLightningEffect(player.getLocation());
-        }
     }
 } 
