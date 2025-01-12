@@ -15,6 +15,7 @@ import org.bukkit.Location;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import org.bukkit.entity.Mob;
 
 public class DeadlyCreeper extends JavaPlugin implements Listener {
     private final Map<UUID, Location> lastCreeperLocations = new HashMap<>();
@@ -36,29 +37,14 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
                             player.getLocation().add(5, 0, 5), 
                             EntityType.CREEPER
                         );
-                        setupCreeper(creeper);
-                        
-                        // Store reference to the plugin
-                        final JavaPlugin plugin = DeadlyCreeper.this;
-                        
-                        // Advanced following mechanism
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                if (!creeper.isValid() || !player.isOnline()) {
-                                    this.cancel();
-                                    return;
-                                }
-                                advancedFollow(creeper, player);
-                            }
-                        }.runTaskTimer(plugin, 0L, 1L);  // Use the stored plugin reference
+                        setupCreeper(creeper, player);
                     }
                 }
             }
         }.runTaskTimer(this, 0L, 20L);
     }
 
-    private void setupCreeper(Creeper creeper) {
+    private void setupCreeper(Creeper creeper, Player target) {
         // Make it invincible but not charged
         creeper.setPowered(false); // Not charged to prevent explosion animation
         creeper.setCustomName("§4☠ Death Tracker ☠");
@@ -77,43 +63,28 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
         creeper.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 1, false, false));
         
         // Set movement speed slightly slower than player
-        creeper.getAttribute(Attribute.valueOf("GENERIC_MOVEMENT_SPEED")).setBaseValue(0.18);
+        creeper.getAttribute(Attribute.valueOf("GENERIC_MOVEMENT_SPEED")).setBaseValue(0.23);
         creeper.getAttribute(Attribute.valueOf("GENERIC_FOLLOW_RANGE")).setBaseValue(100);
-    }
 
-    private void advancedFollow(Creeper creeper, Player player) {
-        // Check if creeper and player are in different worlds (dimensions)
-        if (!creeper.getWorld().equals(player.getWorld())) {
-            teleportInFrontOfPlayer(creeper, player);
-            return;
-        }
+        // Set the target and force pathfinding
+        ((Mob)creeper).setTarget(target);
+        ((Mob)creeper).setAware(true);
         
-        // Calculate direction to player
-        Vector direction = player.getLocation().toVector().subtract(creeper.getLocation().toVector()).normalize();
-        
-        // Basic horizontal movement
-        double speed = 0.18;
-        Vector velocity = new Vector(direction.getX() * speed, creeper.getVelocity().getY(), direction.getZ() * speed);
-        
-        // Jump logic
-        boolean needsToJump = player.getLocation().getY() > creeper.getLocation().getY() + 1.0 || isBlockInFront(creeper);
-        if (needsToJump && creeper.isOnGround()) {
-            // Calculate jump height based on height difference
-            double heightDiff = player.getLocation().getY() - creeper.getLocation().getY();
-            double jumpPower = Math.min(2.0, Math.max(0.8, heightDiff * 0.4)); // Between 0.8 and 2.0
-            velocity.setY(jumpPower);
-        }
-        
-        creeper.setVelocity(velocity);
-        
-        // Handle various scenarios where creeper might get stuck
-        double distance = creeper.getLocation().distance(player.getLocation());
-        if (distance > 100 || isStuck(creeper)) {
-            teleportInFrontOfPlayer(creeper, player);
-        }
-        
-        // Check for collision
-        checkCollision(creeper, player);
+        // Start checking for collision
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!creeper.isValid() || !target.isOnline()) {
+                    this.cancel();
+                    return;
+                }
+                // Handle dimension changes and stuck scenarios
+                if (!creeper.getWorld().equals(target.getWorld()) || isStuck(creeper)) {
+                    teleportInFrontOfPlayer(creeper, target);
+                }
+                checkCollision(creeper, target);
+            }
+        }.runTaskTimer(this, 0L, 1L);
     }
 
     private void teleportInFrontOfPlayer(Creeper creeper, Player player) {
@@ -193,14 +164,5 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
             player.setHealth(0.0);
             player.getWorld().strikeLightningEffect(player.getLocation());
         }
-    }
-
-    private boolean isBlockInFront(Creeper creeper) {
-        Location loc = creeper.getLocation();
-        Vector direction = creeper.getLocation().getDirection().normalize();
-        
-        // Check block in front
-        Location frontLoc = loc.clone().add(direction.multiply(1));
-        return frontLoc.getBlock().getType().isSolid();
     }
 } 
