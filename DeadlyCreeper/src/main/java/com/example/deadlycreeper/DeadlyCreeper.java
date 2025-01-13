@@ -687,7 +687,7 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
         silverfish.teleport(spawnLoc);
         
         // Add teleport message and sound
-        target.sendMessage("§c⚠ The Immortal Snail has teleported closer to you! ⚠");
+        target.sendMessage("§c⚠ The Immortal Snail has crossed space and time to be with you! ⚠");
         target.playSound(target.getLocation(), org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 0.5f);
         target.playSound(target.getLocation(), org.bukkit.Sound.ENTITY_WITHER_AMBIENT, 0.5f, 0.5f);
     }
