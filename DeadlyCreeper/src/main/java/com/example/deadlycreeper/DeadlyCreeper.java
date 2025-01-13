@@ -485,7 +485,23 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
                 event.setCancelled(true);
                 Player player = (Player) event.getEntity();
                 player.setHealth(0.0);
+                
+                // Set custom death message
+                String[] deathMessages = {
+                    "§c%s was finally caught by the Immortal Snail",
+                    "§c%s should have kept running from the Immortal Snail",
+                    "§c%s's immortality was revoked by the Immortal Snail",
+                    "§c%s discovered that you can't outrun fate... or snails",
+                    "§c%s found out why you don't touch suspicious silverfish",
+                    "§c%s's million-dollar mistake was getting too close to the Immortal Snail"
+                };
+                
+                String randomMessage = deathMessages[(int) (Math.random() * deathMessages.length)];
+                player.setLastDamageCause(event);
                 player.getWorld().strikeLightningEffect(player.getLocation());
+                
+                // Broadcast the custom death message
+                getServer().broadcastMessage(String.format(randomMessage, player.getName()));
             }
         }
     }
