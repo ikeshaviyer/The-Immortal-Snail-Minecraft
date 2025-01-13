@@ -35,6 +35,7 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 
 public class DeadlyCreeper extends JavaPlugin implements Listener {
     private static final String TRACKER_NAME = "§4☠ The Immortal Snail ☠";
+    private static final int TELEPORT_DISTANCE = 10; // New constant for teleport distance
     private final Map<UUID, Location> lastSilverfishLocations = new HashMap<>();
     private final Map<UUID, Long> lastSilverfishMoveTimes = new HashMap<>();
     private final Map<Block, Integer> blockBreakingProgress = new HashMap<>();
@@ -69,7 +70,7 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
                         if (!hasTrackerSilverfish()) {
                             Player randomPlayer = players[(int) (Math.random() * players.length)];
                             Silverfish silverfish = (Silverfish) randomPlayer.getWorld().spawnEntity(
-                                randomPlayer.getLocation().add(5, 0, 5), 
+                                randomPlayer.getLocation().add(TELEPORT_DISTANCE, 0, TELEPORT_DISTANCE), 
                                 EntityType.SILVERFISH
                             );
                             setupSilverfish(silverfish, randomPlayer);
@@ -93,7 +94,7 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
         
         // Set movement speed to match player walking speed (0.21)
         silverfish.getAttribute(Attribute.valueOf("GENERIC_MOVEMENT_SPEED")).setBaseValue(0.21);
-        silverfish.getAttribute(Attribute.valueOf("GENERIC_FOLLOW_RANGE")).setBaseValue(10000);
+        silverfish.getAttribute(Attribute.valueOf("GENERIC_FOLLOW_RANGE")).setBaseValue(Double.MAX_VALUE);
 
         // Set the target
         silverfish.setTarget(target);
@@ -119,7 +120,7 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
                         @Override
                         public void run() {
                             // Create a new silverfish in the player's world
-                            Location spawnLoc = target.getLocation().add(5, 0, 5);
+                            Location spawnLoc = target.getLocation().add(TELEPORT_DISTANCE, 0, TELEPORT_DISTANCE);
                             Silverfish newSilverfish = (Silverfish) target.getWorld().spawnEntity(spawnLoc, EntityType.SILVERFISH);
                             setupSilverfish(newSilverfish, target);
                         }
@@ -136,7 +137,7 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
 
                 // Only handle distance-based teleporting when in same world
                 if (silverfishLoc.getWorld().getName().equals(targetLoc.getWorld().getName())) {
-                    if (silverfishLoc.distance(targetLoc) > 500) {
+                    if (silverfishLoc.distance(targetLoc) > 100) {
                         teleportCloserToTarget(silverfish, target);
                     }
                 }
@@ -228,8 +229,24 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
                         }
                     }
                 }
+
+                // Add this check before the distance check
+                if (!silverfish.isValid() || silverfish.isDead()) {
+                    // Respawn the silverfish if it somehow died or became invalid
+                    Location spawnLoc = findSafeSpawnLocation(target.getLocation(), 20);
+                    if (spawnLoc != null) {
+                        Silverfish newSilverfish = (Silverfish) target.getWorld().spawnEntity(spawnLoc, EntityType.SILVERFISH);
+                        setupSilverfish(newSilverfish, target);
+                    }
+                    this.cancel();
+                    return;
+                }
             }
         }.runTaskTimer(this, 0L, 1L);
+
+        // Add these lines after the basic setup
+        silverfish.setPersistent(true);  // Prevents natural despawning
+        silverfish.setRemoveWhenFarAway(false);  // Prevents unloading when chunks are not loaded
     }
 
     private void teleportInFrontOfPlayer(Silverfish silverfish, Player player) {
@@ -547,8 +564,8 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
                     // Spawn new silverfish 20 blocks away from respawn point
                     Location respawnLoc = event.getRespawnLocation();
                     double angle = Math.random() * 2 * Math.PI;
-                    double x = respawnLoc.getX() + (20 * Math.cos(angle));
-                    double z = respawnLoc.getZ() + (20 * Math.sin(angle));
+                    double x = respawnLoc.getX() + (TELEPORT_DISTANCE * Math.cos(angle));
+                    double z = respawnLoc.getZ() + (TELEPORT_DISTANCE * Math.sin(angle));
                     Location spawnLoc = new Location(respawnLoc.getWorld(), x, respawnLoc.getY(), z);
                     
                     // Find safe Y position
@@ -619,8 +636,8 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
 
     private Location findSafeSpawnLocation(Location playerLoc, int distance) {
         double angle = Math.random() * 2 * Math.PI;
-        double x = playerLoc.getX() + (distance * Math.cos(angle));
-        double z = playerLoc.getZ() + (distance * Math.sin(angle));
+        double x = playerLoc.getX() + (TELEPORT_DISTANCE * Math.cos(angle));
+        double z = playerLoc.getZ() + (TELEPORT_DISTANCE * Math.sin(angle));
         Location spawnLoc = new Location(playerLoc.getWorld(), x, playerLoc.getY(), z);
         
         // Handle different dimension types
@@ -653,8 +670,8 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
     private void teleportCloserToTarget(Silverfish silverfish, Player target) {
         Location targetLoc = target.getLocation();
         double angle = Math.random() * 2 * Math.PI;
-        double x = targetLoc.getX() + (20 * Math.cos(angle));
-        double z = targetLoc.getZ() + (20 * Math.sin(angle));
+        double x = targetLoc.getX() + (TELEPORT_DISTANCE * Math.cos(angle));
+        double z = targetLoc.getZ() + (TELEPORT_DISTANCE * Math.sin(angle));
         Location spawnLoc = new Location(targetLoc.getWorld(), x, targetLoc.getY(), z);
         
         // Find safe Y position
@@ -668,6 +685,11 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
         }
         
         silverfish.teleport(spawnLoc);
+        
+        // Add teleport message and sound
+        target.sendMessage("§c⚠ The Immortal Snail has teleported closer to you! ⚠");
+        target.playSound(target.getLocation(), org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 0.5f);
+        target.playSound(target.getLocation(), org.bukkit.Sound.ENTITY_WITHER_AMBIENT, 0.5f, 0.5f);
     }
 
     private void cleanupAllSilverfish() {
