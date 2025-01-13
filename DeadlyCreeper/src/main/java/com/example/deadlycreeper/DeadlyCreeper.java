@@ -30,6 +30,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerPortalEvent;
 import java.util.ArrayList;
+import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 
 public class DeadlyCreeper extends JavaPlugin implements Listener {
     private static final String TRACKER_NAME = "§4☠ The Immortal Snail ☠";
@@ -45,46 +47,13 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
-        cleanupExtraSilverfish();
+        cleanupAllSilverfish();
         spawnCreeperForAllPlayers();
-    }
-
-    private void cleanupExtraSilverfish() {
-        int count = 0;
-        Silverfish keepThis = null;
-        
-        // First pass: count and find the most recently spawned silverfish
-        for (World world : getServer().getWorlds()) {
-            for (Entity entity : world.getEntities()) {
-                if (entity instanceof Silverfish && 
-                    TRACKER_NAME.equals(entity.getCustomName())) {
-                    count++;
-                    if (keepThis == null || entity.getTicksLived() < keepThis.getTicksLived()) {
-                        keepThis = (Silverfish) entity;
-                    }
-                }
-            }
-        }
-        
-        // If we found more than one, remove all except the newest
-        if (count > 1) {
-            getLogger().warning("Found " + count + " tracker silverfish! Cleaning up extras...");
-            for (World world : getServer().getWorlds()) {
-                for (Entity entity : world.getEntities()) {
-                    if (entity instanceof Silverfish && 
-                        TRACKER_NAME.equals(entity.getCustomName()) &&
-                        entity != keepThis) {
-                        entity.remove();
-                        getLogger().info("Removed extra silverfish in " + world.getName());
-                    }
-                }
-            }
-        }
     }
 
     private void spawnCreeperForAllPlayers() {
         // First clean up any existing trackers
-        cleanupExtraSilverfish();
+        cleanupAllSilverfish();
         
         new BukkitRunnable() {
             @Override
@@ -94,7 +63,7 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
                     Player[] players = getServer().getOnlinePlayers().toArray(new Player[0]);
                     if (players.length > 0) {
                         // Clean up again just before spawning
-                        cleanupExtraSilverfish();
+                        cleanupAllSilverfish();
                         
                         // Only spawn if still no silverfish
                         if (!hasTrackerSilverfish()) {
@@ -133,37 +102,43 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
+                // Basic validity checks
                 if (!silverfish.isValid() || !target.isOnline()) {
                     this.cancel();
                     return;
                 }
 
                 // Check dimension first, before any other logic
-                if (!silverfish.getWorld().equals(target.getWorld())) {
-                    // Remove the silverfish from the old world
+                if (!silverfish.getWorld().getName().equals(target.getWorld().getName())) {
+                    // Force remove the silverfish from the old world
+                    silverfish.setHealth(0);
                     silverfish.remove();
                     
-                    // Create a new silverfish in the player's world
-                    Location spawnLoc = target.getLocation().add(5, 0, 5);
-                    Silverfish newSilverfish = (Silverfish) target.getWorld().spawnEntity(spawnLoc, EntityType.SILVERFISH);
-                    setupSilverfish(newSilverfish, target);
+                    // Small delay before spawning new silverfish to ensure old one is gone
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            // Create a new silverfish in the player's world
+                            Location spawnLoc = target.getLocation().add(5, 0, 5);
+                            Silverfish newSilverfish = (Silverfish) target.getWorld().spawnEntity(spawnLoc, EntityType.SILVERFISH);
+                            setupSilverfish(newSilverfish, target);
+                        }
+                    }.runTaskLater(getPlugin(DeadlyCreeper.class), 2L);
                     
                     // Cancel this runnable since we're creating a new silverfish with its own runnable
                     this.cancel();
                     return;
                 }
 
+                // Only proceed with movement and block logic if in same dimension
                 Location targetLoc = target.getLocation();
                 Location silverfishLoc = silverfish.getLocation();
 
                 // Only handle distance-based teleporting when in same world
-                if (silverfishLoc.getWorld().equals(targetLoc.getWorld())) {
+                if (silverfishLoc.getWorld().getName().equals(targetLoc.getWorld().getName())) {
                     if (silverfishLoc.distance(targetLoc) > 100) {
                         teleportCloserToTarget(silverfish, target);
                     }
-                } else {
-                    // If in different worlds, just teleport
-                    teleportCloserToTarget(silverfish, target);
                 }
 
                 Vector direction = targetLoc.toVector().subtract(silverfishLoc.toVector()).normalize();
@@ -173,7 +148,16 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
                     Iterator<Block> iterator = placedBlocks.iterator();
                     while (iterator.hasNext()) {
                         Block block = iterator.next();
-                        if (block.getLocation().distance(silverfishLoc) > 2) { // Remove blocks more than 2 blocks away
+                        // Only check distance if in the same world
+                        if (block.getWorld().getName().equals(silverfishLoc.getWorld().getName())) {
+                            if (block.getLocation().distance(silverfishLoc) > 2) { // Remove blocks more than 2 blocks away
+                                if (block.getType() == Material.COBBLESTONE) {
+                                    block.setType(Material.AIR);
+                                }
+                                iterator.remove();
+                            }
+                        } else {
+                            // If block is in a different world, just remove it
                             if (block.getType() == Material.COBBLESTONE) {
                                 block.setType(Material.AIR);
                             }
@@ -243,11 +227,6 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
                             placedBlocks.add(blockBelowFront);
                         }
                     }
-                }
-
-                // Only teleport if in different world
-                if (!silverfish.getWorld().equals(target.getWorld())) {
-                    teleportInFrontOfPlayer(silverfish, target);
                 }
             }
         }.runTaskTimer(this, 0L, 1L);
@@ -418,9 +397,9 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
         BukkitRunnable task = new BukkitRunnable() {
             int progress = 0;
             // Calculate break time based on block hardness (20 ticks = 1 second)
-            int breakTime = (int) (block.getType().getHardness() * 20);
-            // Ensure break time is between 5 ticks (0.25s) and 80 ticks (4s)
-            int adjustedBreakTime = Math.min(80, Math.max(4, breakTime));
+            int breakTime = block.getType() == Material.OBSIDIAN ? 200 : (int) (block.getType().getHardness() * 20);
+            // Ensure break time is between 5 ticks (0.25s) and 80 ticks (4s) for non-obsidian blocks
+            int adjustedBreakTime = block.getType() == Material.OBSIDIAN ? 200 : Math.min(80, Math.max(4, breakTime));
 
             @Override
             public void run() {
@@ -474,6 +453,7 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
                type != Material.WATER && 
                type != Material.LAVA &&
                !type.name().contains("UNBREAKABLE") &&
+               !type.name().contains("BED") && // This will prevent breaking any type of bed
                block.getType().getHardness() >= 0; // Ensure block is breakable
     }
 
@@ -544,7 +524,7 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
             @Override
             public void run() {
                 // Clean up any existing silverfish first
-                cleanupExtraSilverfish();
+                cleanupAllSilverfish();
                 
                 // Only spawn if there are no existing silverfish
                 if (!hasTrackerSilverfish()) {
@@ -576,20 +556,7 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
-        handleDimensionChange(event.getPlayer());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerTeleport(PlayerTeleportEvent event) {
-        if (event.getFrom().getWorld() != event.getTo().getWorld()) {
-            handleDimensionChange(event.getPlayer());
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerPortal(PlayerPortalEvent event) {
-        if (event.isCancelled()) return;
+    public void onDimensionChange(PlayerChangedWorldEvent event) {
         handleDimensionChange(event.getPlayer());
     }
 
@@ -713,7 +680,7 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         // Clean up all silverfish before disabling
-        cleanupExtraSilverfish();
+        cleanupAllSilverfish();
         // Clean up any remaining breaking animations
         for (Block block : blockBreakingTasks.keySet()) {
             blockBreakingTasks.get(block).cancel();
@@ -731,5 +698,19 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
             }
         }
         placedBlocks.clear();
+    }
+
+    @EventHandler
+    public void onEntitySpawn(org.bukkit.event.entity.EntitySpawnEvent event) {
+        if (event.getEntity() instanceof Silverfish) {
+            // Check if there's a nearby tracker silverfish that might be the parent
+            for (Entity nearby : event.getLocation().getWorld().getNearbyEntities(event.getLocation(), 5, 5, 5)) {
+                if (nearby instanceof Silverfish && TRACKER_NAME.equals(nearby.getCustomName())) {
+                    // Cancel the spawn of the new silverfish
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
     }
 } 
