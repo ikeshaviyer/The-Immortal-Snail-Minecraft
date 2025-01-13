@@ -93,7 +93,7 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
         
         // Set movement speed to match player walking speed (0.21)
         silverfish.getAttribute(Attribute.valueOf("GENERIC_MOVEMENT_SPEED")).setBaseValue(0.21);
-        silverfish.getAttribute(Attribute.valueOf("GENERIC_FOLLOW_RANGE")).setBaseValue(100);
+        silverfish.getAttribute(Attribute.valueOf("GENERIC_FOLLOW_RANGE")).setBaseValue(10000);
 
         // Set the target
         silverfish.setTarget(target);
@@ -136,7 +136,7 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
 
                 // Only handle distance-based teleporting when in same world
                 if (silverfishLoc.getWorld().getName().equals(targetLoc.getWorld().getName())) {
-                    if (silverfishLoc.distance(targetLoc) > 100) {
+                    if (silverfishLoc.distance(targetLoc) > 500) {
                         teleportCloserToTarget(silverfish, target);
                     }
                 }
@@ -272,10 +272,10 @@ public class DeadlyCreeper extends JavaPlugin implements Listener {
             return false;
         }
         
-        // Check if silverfish hasn't moved significantly in the last 2 seconds
+        // Check if silverfish hasn't moved significantly in the last 30 seconds
         boolean notMoving = vel.lengthSquared() < 0.01;
         boolean samePosition = lastLocation.getWorld().equals(loc.getWorld()) && lastLocation.distance(loc) < 0.5;
-        boolean stuckTooLong = (currentTime - lastMoveTime) > 2000; // 2 seconds
+        boolean stuckTooLong = (currentTime - lastMoveTime) > 30000; // 2 seconds
         
         // Check if there are any breakable blocks around
         boolean canBreakNearby = false;
