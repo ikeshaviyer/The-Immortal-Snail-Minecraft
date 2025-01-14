@@ -15,7 +15,7 @@ A Minecraft plugin that implements the "Immortal Snail" scenario: an unstoppable
 
 ## Installation
 
-1. Download the latest release from the [releases page](link-to-releases)
+1. Download the latest release from the [releases page](https://github.com/ikeshaviyer/The-Immortal-Creeper/releases/)
 2. Place the JAR file in your server's `plugins` folder
 3. Restart your server
 4. The plugin will automatically create necessary configuration files
