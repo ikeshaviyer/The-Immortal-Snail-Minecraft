@@ -1,4 +1,4 @@
-# Deadly Creeper (Immortal Snail Plugin)
+# Deadly Silverfish (Immortal Snail Plugin)
 
 A Minecraft plugin that implements the "Immortal Snail" scenario: an unstoppable, immortal silverfish that constantly pursues players. If it touches you, you die instantly!
 
