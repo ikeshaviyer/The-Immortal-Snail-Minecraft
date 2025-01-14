@@ -22,8 +22,8 @@ A Minecraft plugin that implements the "Immortal Snail" scenario: an unstoppable
 
 ## Building from Source
 bash
-git clone https://github.com/yourusername/deadly-creeper.git
-cd deadly-creeper
+git clone https://github.com/ikeshaviyer/The-Immortal-Creeper.git
+cd The-Immortal-Creeper
 mvn clean package
 
 The compiled JAR will be in the `target` directory.
