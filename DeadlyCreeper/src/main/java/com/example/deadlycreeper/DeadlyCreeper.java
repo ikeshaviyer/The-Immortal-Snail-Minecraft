@@ -1,5 +1,4 @@
 package com.example.deadlycreeper;
-
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.entity.*;
 import org.bukkit.event.Listener;
